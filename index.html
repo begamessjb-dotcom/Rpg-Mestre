@@ -1,587 +1,741 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1,
-               maximum-scale=1,
-               user-scalable=no,
-               viewport-fit=cover">
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
 
-<meta name="theme-color" content="#080b10">
+<meta name="theme-color"
+content="#080b10">
 
-<title>RPG — Mestre IA</title>
+<title>RPG Mestre IA</title>
 
 <style>
 
-/* =========================================================
-   RESET
-========================================================= */
+/* =====================================================
+   BASE
+===================================================== */
 
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,
-body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background: #080b10;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
+body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+
+    background:#080b10;
+    color:white;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 button,
 input,
-textarea {
-    font-family: inherit;
+textarea{
+    font-family:inherit;
 }
 
-button {
-    color: white;
-    border: 0;
-    cursor: pointer;
+button{
+    color:white;
+    border:0;
 }
 
 
-/* =========================================================
+/* =====================================================
    APP
-========================================================= */
+===================================================== */
 
-#app {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+#app{
+    width:100%;
+    height:100%;
+
+    display:flex;
+    flex-direction:column;
 }
 
 
-/* =========================================================
+/* =====================================================
    TOPO
-========================================================= */
+===================================================== */
 
-#topbar {
-    height: 54px;
-    min-height: 54px;
+#topbar{
 
-    display: flex;
-    align-items: center;
+    height:55px;
+    min-height:55px;
 
-    padding: 7px 10px;
-    gap: 8px;
+    display:flex;
+    align-items:center;
 
-    background: #111720;
-    border-bottom: 1px solid #303949;
+    gap:7px;
 
-    z-index: 1000;
+    padding:
+        7px
+        max(7px,env(safe-area-inset-right))
+        7px
+        max(7px,env(safe-area-inset-left));
+
+    background:#111720;
+
+    border-bottom:
+        1px solid #303949;
+
+    z-index:5000;
 }
 
-#logo {
-    flex: 1;
-    font-size: 15px;
-    font-weight: bold;
+#logo{
+    flex:1;
+
+    font-size:14px;
+    font-weight:bold;
+
+    white-space:nowrap;
 }
 
-#connection {
-    font-size: 10px;
-    padding: 5px 8px;
+#connection{
 
-    border-radius: 20px;
-    border: 1px solid #394456;
+    padding:5px 8px;
 
-    opacity: .9;
+    border-radius:20px;
+
+    background:#18202c;
+
+    border:
+        1px solid #394456;
+
+    font-size:10px;
 }
 
-.topButton {
-    background: #202938;
-    border-radius: 10px;
-    padding: 9px;
-    font-size: 16px;
+.topButton{
+
+    width:40px;
+    height:40px;
+
+    border-radius:10px;
+
+    background:#202938;
+
+    border:
+        1px solid #394456;
+
+    font-size:17px;
+
+    touch-action:manipulation;
 }
 
 
-/* =========================================================
+/* =====================================================
    MUNDO
-========================================================= */
+===================================================== */
 
-#world {
-    position: relative;
+#world{
 
-    flex: 1;
+    position:relative;
 
-    overflow: hidden;
+    flex:1;
+
+    min-height:0;
+
+    overflow:hidden;
 
     background:
         linear-gradient(
-            #26372b,
-            #182219
+            180deg,
+            #314a35 0%,
+            #243726 100%
         );
 
-    touch-action: none;
+    touch-action:none;
+
+    user-select:none;
+
+    -webkit-user-select:none;
 }
 
 
-/* =========================================================
+/* =====================================================
    CAMADAS
-========================================================= */
+===================================================== */
 
-#layers {
-    position: absolute;
-    inset: 0;
+#layers{
 
-    overflow: hidden;
+    position:absolute;
+
+    inset:0;
+
+    overflow:hidden;
+
+    pointer-events:none;
 }
 
-.layer {
-    position: absolute;
+.layer{
 
-    inset: 0;
+    position:absolute;
 
-    pointer-events: none;
+    inset:0;
+
+    pointer-events:none;
 }
 
 
-/* =========================================================
-   ELEMENTOS CRIADOS PELO MESTRE
-========================================================= */
+/* =====================================================
+   ELEMENTOS DO MUNDO
+===================================================== */
 
-.worldElement {
-    position: absolute;
+.worldElement{
 
-    transform-origin: center center;
+    position:absolute;
 
-    user-select: none;
+    display:flex;
 
-    pointer-events: auto;
+    align-items:center;
 
-    touch-action: manipulation;
+    justify-content:center;
 
-    white-space: pre-wrap;
+    transform-origin:center;
+
+    pointer-events:auto;
+
+    touch-action:manipulation;
+
+    user-select:none;
+
+    -webkit-user-select:none;
+
+    -webkit-touch-callout:none;
+
+    cursor:pointer;
+
+    background:transparent;
+
+    border:0;
+
+    padding:0;
+
+    margin:0;
 }
 
-.emojiElement {
-    font-size: clamp(
-        30px,
-        9vw,
-        80px
-    );
+.emojiElement{
+
+    font-size:
+        clamp(
+            32px,
+            10vw,
+            85px
+        );
+
+    line-height:1;
 
     filter:
         drop-shadow(
-            0 4px 4px rgba(0,0,0,.6)
+            0 5px 4px
+            rgba(0,0,0,.6)
         );
 }
 
-.imageElement {
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
+.textElement{
+
+    padding:6px 9px;
+
+    border-radius:9px;
+
+    background:
+        rgba(0,0,0,.55);
+
+    font-size:14px;
+}
+
+.imageElement{
+
+    background-repeat:no-repeat;
+
+    background-position:center;
+
+    background-size:contain;
 }
 
 
-/* =========================================================
+/* =====================================================
    HUD
-========================================================= */
+===================================================== */
 
-#hud {
-    position: absolute;
+#hud{
 
-    top: 8px;
-    left: 8px;
-    right: 8px;
+    position:absolute;
 
-    display: flex;
+    top:8px;
+    left:8px;
+    right:8px;
 
-    gap: 6px;
+    display:flex;
 
-    flex-wrap: wrap;
+    gap:6px;
 
-    z-index: 500;
+    flex-wrap:wrap;
 
-    pointer-events: none;
+    z-index:1000;
+
+    pointer-events:none;
 }
 
-.hudBox {
-    padding: 6px 9px;
+.hudBox{
 
-    border-radius: 10px;
+    padding:6px 9px;
 
-    background: rgba(8,12,18,.88);
+    border-radius:10px;
 
-    border: 1px solid #394456;
+    background:
+        rgba(7,11,17,.9);
 
-    font-size: 11px;
-}
+    border:
+        1px solid #3c4657;
 
+    font-size:11px;
 
-/* =========================================================
-   MENSAGEM DO MESTRE
-========================================================= */
-
-#masterMessage {
-    position: absolute;
-
-    left: 8px;
-    right: 8px;
-
-    bottom: 8px;
-
-    z-index: 700;
-
-    padding: 9px 11px;
-
-    border-radius: 13px;
-
-    background: rgba(8,12,18,.90);
-
-    border: 1px solid #394456;
-
-    pointer-events: none;
-
-    backdrop-filter: blur(5px);
-}
-
-#masterMessageTitle {
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 3px;
-}
-
-#masterMessageText {
-    font-size: 13px;
-    color: #dce2eb;
+    backdrop-filter:blur(5px);
 }
 
 
-/* =========================================================
-   AÇÕES DINÂMICAS
-========================================================= */
+/* =====================================================
+   MENSAGEM
+===================================================== */
 
-#dynamicActions {
-    position: absolute;
+#masterMessage{
 
-    left: 8px;
-    right: 8px;
+    position:absolute;
 
-    bottom: 75px;
+    left:8px;
+    right:8px;
+    bottom:8px;
 
-    display: flex;
+    padding:9px 11px;
 
-    justify-content: center;
+    border-radius:13px;
 
-    flex-wrap: wrap;
+    background:
+        rgba(7,11,17,.92);
 
-    gap: 7px;
+    border:
+        1px solid #3c4657;
 
-    z-index: 800;
+    z-index:1200;
 
-    pointer-events: none;
+    pointer-events:none;
+
+    backdrop-filter:blur(6px);
 }
 
-.dynamicButton {
-    pointer-events: auto;
+#masterMessageTitle{
 
-    padding: 9px 12px;
+    font-size:12px;
 
-    border-radius: 11px;
+    font-weight:bold;
 
-    background: rgba(20,29,42,.95);
-
-    border: 1px solid #46546a;
-
-    color: white;
+    margin-bottom:3px;
 }
 
+#masterMessageText{
 
-/* =========================================================
-   BARRA INFERIOR
-========================================================= */
+    font-size:13px;
 
-#bottomBar {
-    height: 70px;
-    min-height: 70px;
-
-    display: flex;
-
-    gap: 6px;
-
-    padding: 7px;
-
-    background: #111720;
-
-    border-top: 1px solid #303949;
-
-    z-index: 1000;
-}
-
-.bottomButton {
-    flex: 1;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 2px;
-
-    border-radius: 12px;
-
-    background: #1a2230;
-
-    border: 1px solid #354052;
-
-    font-size: 18px;
-}
-
-.bottomButton span {
-    font-size: 10px;
+    color:#dce2eb;
 }
 
 
-/* =========================================================
+/* =====================================================
+   AÇÕES CRIADAS PELO MESTRE
+===================================================== */
+
+#dynamicActions{
+
+    position:absolute;
+
+    left:8px;
+    right:8px;
+    bottom:72px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:7px;
+
+    z-index:2000;
+
+    pointer-events:none;
+}
+
+.dynamicButton{
+
+    pointer-events:auto;
+
+    padding:10px 13px;
+
+    border-radius:11px;
+
+    background:#1c2635;
+
+    border:
+        1px solid #48566c;
+
+    font-size:12px;
+
+    touch-action:manipulation;
+}
+
+
+/* =====================================================
+   BARRA
+===================================================== */
+
+#bottomBar{
+
+    height:70px;
+    min-height:70px;
+
+    display:flex;
+
+    gap:6px;
+
+    padding:
+        6px
+        max(6px,env(safe-area-inset-right))
+        max(6px,env(safe-area-inset-bottom))
+        max(6px,env(safe-area-inset-left));
+
+    background:#111720;
+
+    border-top:
+        1px solid #303949;
+
+    z-index:5000;
+}
+
+.bottomButton{
+
+    flex:1;
+
+    min-width:0;
+
+    border-radius:11px;
+
+    background:#1a2230;
+
+    border:
+        1px solid #354052;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:2px;
+
+    font-size:18px;
+
+    touch-action:manipulation;
+}
+
+.bottomButton span{
+
+    font-size:9px;
+
+    white-space:nowrap;
+}
+
+
+/* =====================================================
    PAINÉIS
-========================================================= */
+===================================================== */
 
-.panel {
-    position: absolute;
+.panel{
 
-    top: 54px;
-    bottom: 70px;
+    position:absolute;
 
-    left: 0;
-    right: 0;
+    top:55px;
+    left:0;
+    right:0;
+    bottom:70px;
 
-    z-index: 2000;
+    display:none;
 
-    display: none;
+    overflow:auto;
 
-    overflow: auto;
+    padding:13px;
 
-    padding: 14px;
+    background:
+        rgba(8,12,18,.98);
 
-    background: rgba(10,14,21,.98);
+    z-index:7000;
 }
 
-.panel.active {
-    display: block;
+.panel.active{
+
+    display:block;
 }
 
-.panelTitle {
-    font-size: 20px;
-    font-weight: bold;
+.panelTitle{
 
-    margin-bottom: 15px;
+    font-size:20px;
+
+    font-weight:bold;
+
+    margin-bottom:14px;
 }
 
-.closeButton {
-    float: right;
+.closeButton{
 
-    padding: 8px 11px;
+    float:right;
 
-    border-radius: 9px;
+    width:40px;
+    height:40px;
 
-    background: #252d3b;
+    border-radius:10px;
+
+    background:#252e3c;
+
+    font-size:17px;
+
+    touch-action:manipulation;
 }
 
 
-/* =========================================================
+/* =====================================================
    CARDS
-========================================================= */
+===================================================== */
 
-.card {
-    padding: 12px;
+.card{
 
-    margin-bottom: 10px;
+    padding:12px;
 
-    border-radius: 13px;
+    margin-bottom:10px;
 
-    background: #161e2a;
+    border-radius:13px;
 
-    border: 1px solid #364154;
+    background:#161e2a;
+
+    border:
+        1px solid #364154;
 }
 
-.card button {
-    padding: 9px;
+.card button{
 
-    margin: 3px;
+    padding:9px 11px;
 
-    border-radius: 9px;
+    margin:3px;
 
-    background: #1d2736;
+    border-radius:9px;
 
-    border: 1px solid #3c485c;
+    background:#1d2736;
+
+    border:
+        1px solid #3c485c;
 }
 
 .card input,
-.card textarea {
-    width: 100%;
+.card textarea{
 
-    padding: 10px;
+    width:100%;
 
-    border-radius: 9px;
+    padding:10px;
 
-    color: white;
+    border-radius:9px;
 
-    background: #101722;
+    color:white;
 
-    border: 1px solid #3b4659;
+    background:#101722;
 
-    outline: none;
+    border:
+        1px solid #3b4659;
+
+    outline:none;
 }
 
 
-/* =========================================================
+/* =====================================================
    INVENTÁRIO
-========================================================= */
+===================================================== */
 
-.inventoryItem {
-    padding: 10px;
+.inventoryItem{
 
-    margin-bottom: 7px;
+    padding:11px;
 
-    border-radius: 10px;
+    margin-bottom:7px;
 
-    background: #161e2a;
+    border-radius:10px;
 
-    border: 1px solid #364154;
+    background:#161e2a;
+
+    border:
+        1px solid #364154;
 }
 
 
-/* =========================================================
+/* =====================================================
    STATUS
-========================================================= */
+===================================================== */
 
-.statusRow {
-    display: flex;
+.statusRow{
 
-    justify-content: space-between;
+    display:flex;
 
-    padding: 10px;
+    justify-content:space-between;
 
-    margin-bottom: 7px;
+    padding:10px;
 
-    border-radius: 10px;
+    margin-bottom:7px;
 
-    background: #161e2a;
+    border-radius:10px;
 
-    border: 1px solid #364154;
+    background:#161e2a;
+
+    border:
+        1px solid #364154;
 }
 
 
-/* =========================================================
+/* =====================================================
    CHAT
-========================================================= */
+===================================================== */
 
-#chatLog {
-    height: calc(100% - 120px);
+#chatLog{
 
-    min-height: 180px;
+    height:
+        calc(100% - 115px);
 
-    overflow-y: auto;
+    overflow-y:auto;
 
-    padding: 8px;
+    padding:8px;
 
-    border-radius: 12px;
+    border-radius:12px;
 
-    background: #080c12;
+    background:#080c12;
 
-    border: 1px solid #303949;
+    border:
+        1px solid #303949;
 }
 
-.chatMessage {
-    padding: 8px;
+.chatMessage{
 
-    border-bottom: 1px solid #242c38;
+    padding:8px;
 
-    font-size: 13px;
+    border-bottom:
+        1px solid #242c38;
+
+    font-size:13px;
 }
 
-.chatMessage strong {
-    display: block;
+.chatMessage strong{
 
-    margin-bottom: 3px;
+    display:block;
+
+    margin-bottom:3px;
 }
 
-#chatArea {
-    display: flex;
+#chatArea{
 
-    gap: 7px;
+    display:flex;
 
-    margin-top: 8px;
+    gap:7px;
+
+    margin-top:8px;
 }
 
-#chatInput {
-    flex: 1;
+#chatInput{
 
-    resize: none;
+    flex:1;
 
-    color: white;
+    resize:none;
 
-    background: #111822;
+    color:white;
 
-    border: 1px solid #384356;
+    background:#111822;
 
-    border-radius: 10px;
+    border:
+        1px solid #384356;
 
-    padding: 9px;
+    border-radius:10px;
+
+    padding:9px;
 }
 
-#sendChat {
-    width: 52px;
+#sendChat{
 
-    border-radius: 10px;
+    width:52px;
 
-    background: #202b3b;
+    border-radius:10px;
 
-    border: 1px solid #455268;
+    background:#202b3b;
+
+    border:
+        1px solid #455268;
+
+    font-size:18px;
+
+    touch-action:manipulation;
 }
 
 
-/* =========================================================
-   MODO PAISAGEM
-========================================================= */
+/* =====================================================
+   ORIENTAÇÃO
+===================================================== */
 
-@media (orientation: portrait) {
+@media(max-width:600px) and (orientation:portrait){
 
-    #world::after {
+    #world::after{
 
-        content: "↻  MODO PAISAGEM RECOMENDADO";
+        content:
+            "↻  Gire o celular para paisagem";
 
-        position: absolute;
+        position:absolute;
 
-        inset: 0;
+        inset:0;
 
-        display: flex;
+        display:flex;
 
-        align-items: center;
+        align-items:center;
 
-        justify-content: center;
+        justify-content:center;
 
-        background: rgba(0,0,0,.78);
+        background:
+            rgba(0,0,0,.72);
 
-        font-weight: bold;
+        font-weight:bold;
 
-        font-size: 15px;
+        z-index:9998;
 
-        z-index: 9999;
-
-        pointer-events: none;
+        pointer-events:none;
     }
 }
 
 </style>
+
 </head>
 
+
 <body>
+
 
 <div id="app">
 
@@ -593,7 +747,7 @@ button {
 <header id="topbar">
 
     <div id="logo">
-        🧙 RPG — Mestre IA
+        🧙 RPG Mestre IA
     </div>
 
     <div id="connection">
@@ -602,7 +756,7 @@ button {
 
     <button
         class="topButton"
-        onclick="openPanel('settings')">
+        id="settingsButton">
 
         ⚙️
 
@@ -623,7 +777,6 @@ button {
 
     <div id="dynamicActions"></div>
 
-
     <div id="masterMessage">
 
         <div id="masterMessageTitle">
@@ -631,7 +784,7 @@ button {
         </div>
 
         <div id="masterMessageText">
-            O mundo aguarda sua próxima ação.
+            O mundo está pronto.
         </div>
 
     </div>
@@ -640,57 +793,72 @@ button {
 
 
 <!-- =====================================================
-     BARRA INFERIOR
+     BARRA
 ===================================================== -->
 
 <nav id="bottomBar">
 
     <button
         class="bottomButton"
-        onclick="openPanel('inventory')">
+        id="inventoryButton">
 
         🎒
-        <span>Inventário</span>
+
+        <span>
+            Inventário
+        </span>
 
     </button>
 
 
     <button
         class="bottomButton"
-        onclick="openPanel('status')">
+        id="statusButton">
 
         📊
-        <span>Status</span>
+
+        <span>
+            Status
+        </span>
 
     </button>
 
 
     <button
         class="bottomButton"
-        onclick="openPanel('system')">
+        id="systemButton">
 
         ⚙️
-        <span>Sistema</span>
+
+        <span>
+            Sistema
+        </span>
 
     </button>
 
 
     <button
         class="bottomButton"
-        onclick="toggleMoveMode()">
+        id="moveButton">
 
         🚶
-        <span>Andar</span>
+
+        <span>
+            Andar
+        </span>
 
     </button>
 
 
     <button
         class="bottomButton"
-        onclick="openPanel('master')">
+        id="masterButton">
 
         💬
-        <span>Mestre</span>
+
+        <span>
+            Mestre
+        </span>
 
     </button>
 
@@ -702,12 +870,12 @@ button {
 ===================================================== -->
 
 <section
-    id="inventory"
-    class="panel">
+    class="panel"
+    id="inventoryPanel">
 
     <button
         class="closeButton"
-        onclick="closePanels()">
+        data-close>
 
         ✕
 
@@ -727,12 +895,12 @@ button {
 ===================================================== -->
 
 <section
-    id="status"
-    class="panel">
+    class="panel"
+    id="statusPanel">
 
     <button
         class="closeButton"
-        onclick="closePanels()">
+        data-close>
 
         ✕
 
@@ -752,12 +920,12 @@ button {
 ===================================================== -->
 
 <section
-    id="system"
-    class="panel">
+    class="panel"
+    id="systemPanel">
 
     <button
         class="closeButton"
-        onclick="closePanels()">
+        data-close>
 
         ✕
 
@@ -770,16 +938,16 @@ button {
 
     <div class="card">
 
-        <button onclick="saveGame()">
+        <button id="saveButton">
             💾 Salvar
         </button>
 
-        <button onclick="loadGame()">
+        <button id="loadButton">
             📂 Carregar
         </button>
 
-        <button onclick="newGame()">
-            ↩️ Novo jogo
+        <button id="newGameButton">
+            🆕 Novo jogo
         </button>
 
     </div>
@@ -787,9 +955,11 @@ button {
 
     <div class="card">
 
-        <b>📅 Calendário</b>
+        <b>
+            📅 Data
+        </b>
 
-        <div id="calendarText"></div>
+        <p id="calendarText"></p>
 
     </div>
 
@@ -801,12 +971,12 @@ button {
 ===================================================== -->
 
 <section
-    id="settings"
-    class="panel">
+    class="panel"
+    id="settingsPanel">
 
     <button
         class="closeButton"
-        onclick="closePanels()">
+        data-close>
 
         ✕
 
@@ -819,15 +989,17 @@ button {
 
     <div class="card">
 
-        <b>📱 Tela</b>
+        <b>
+            📱 Tela
+        </b>
 
         <br><br>
 
-        <button onclick="fullscreen()">
+        <button id="fullscreenButton">
             ⛶ Tela cheia
         </button>
 
-        <button onclick="landscape()">
+        <button id="landscapeButton">
             📱 Paisagem
         </button>
 
@@ -836,7 +1008,9 @@ button {
 
     <div class="card">
 
-        <b>🌐 Servidor do Mestre</b>
+        <b>
+            🌐 Servidor do Mestre
+        </b>
 
         <br><br>
 
@@ -846,14 +1020,15 @@ button {
 
         <br><br>
 
-        <button onclick="testServer()">
-            🔌 Testar conexão
+        <button id="testServerButton">
+            🔌 Testar
         </button>
 
         <p style="font-size:11px;opacity:.65">
 
-            A chave da API deve ficar no servidor,
-            não dentro deste HTML.
+            Nunca coloque a chave da API neste HTML.
+
+            Ela deve ficar no servidor.
 
         </p>
 
@@ -863,23 +1038,23 @@ button {
 
 
 <!-- =====================================================
-     MESTRE
+     CHAT
 ===================================================== -->
 
 <section
-    id="master"
-    class="panel">
+    class="panel"
+    id="masterPanel">
 
     <button
         class="closeButton"
-        onclick="closePanels()">
+        data-close>
 
         ✕
 
     </button>
 
     <div class="panelTitle">
-        🧙 Conversar com o Mestre
+        🧙 Mestre
     </div>
 
 
@@ -891,7 +1066,7 @@ button {
         <textarea
             id="chatInput"
             rows="2"
-            placeholder="Fale diretamente com o Mestre...">
+            placeholder="Fale com o Mestre...">
         </textarea>
 
         <button id="sendChat">
@@ -908,237 +1083,262 @@ button {
 
 <script>
 
-/* =========================================================
-   ESTADO DO RPG
-========================================================= */
+/* =====================================================
+   ESTADO PADRÃO
+===================================================== */
 
 const DEFAULT_STATE = {
 
-    calendar: {
-
-        year: 3,
-
-        month: 8,
-
-        day: 19
-
+    calendar:{
+        year:3,
+        month:8,
+        day:19
     },
 
 
-    player: {
+    player:{
 
-        name: "Jogador",
+        name:"Jogador",
 
-        hp: 100,
+        hp:100,
+        hpMax:100,
 
-        hpMax: 100,
+        mana:80,
+        manaMax:80,
 
-        mana: 80,
+        stamina:100,
+        staminaMax:100,
 
-        manaMax: 80,
+        level:1,
 
-        stamina: 100,
+        exp:0,
 
-        staminaMax: 100,
-
-        level: 1,
-
-        exp: 0,
-
-        x: 50,
-
-        y: 70
-
+        x:50,
+        y:70
     },
 
 
-    world: {
+    world:{
 
-        location: "Floresta",
+        location:"Floresta",
 
-        weather: "normal",
+        weather:"Normal",
 
-        time: "18:42"
-
+        time:"18:42"
     },
 
 
-    inventory: [
+    inventory:[
 
         {
+            name:
+            "Fragmento de Cristal de Sintonia",
 
-            name: "Fragmento de Cristal de Sintonia",
-
-            qty: 1
-
+            qty:1
         }
 
     ],
 
 
     /*
-       50 CAMADAS INICIAIS.
+       50 camadas.
 
-       Elas podem ficar vazias.
-
-       O Mestre pode utilizar qualquer uma.
-
-       E o sistema permite criar mais.
+       O número pode crescer
+       automaticamente.
     */
 
-    layers: Array.from(
-        {length: 50},
-        () => ({
-            elements: []
-        })
-    ),
+    layers:
+        Array.from(
+            {length:50},
+            (_,index)=>({
+
+                id:index+1,
+
+                elements:[]
+
+            })
+        ),
 
 
-    actions: [],
-
+    actions:[],
 
     narrative:
-        "O mundo aguarda sua próxima ação."
-
+        "O mundo está pronto."
 };
 
 
-/* =========================================================
-   ESTADO ATUAL
-========================================================= */
+/* =====================================================
+   CARREGAMENTO
+===================================================== */
 
-let state =
-    JSON.parse(
-        localStorage.getItem("RPG_MESTRE_STATE")
-    ) || structuredClone(DEFAULT_STATE);
+function loadState(){
 
+    try{
 
-/* =========================================================
-   UTILITÁRIOS
-========================================================= */
-
-function clone(obj) {
-
-    return JSON.parse(
-        JSON.stringify(obj)
-    );
-
-}
-
-
-function escapeHTML(text) {
-
-    return String(text)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-
-}
-
-
-/* =========================================================
-   PAINÉIS
-========================================================= */
-
-function openPanel(id) {
-
-    document
-        .querySelectorAll(".panel")
-        .forEach(
-            p => p.classList.remove("active")
-        );
-
-    const panel =
-        document.getElementById(id);
-
-    if(panel) {
-
-        panel.classList.add("active");
-
-    }
-
-}
-
-
-function closePanels() {
-
-    document
-        .querySelectorAll(".panel")
-        .forEach(
-            p => p.classList.remove("active")
-        );
-
-}
-
-
-/* =========================================================
-   TELA CHEIA
-========================================================= */
-
-async function fullscreen() {
-
-    try {
-
-        if(!document.fullscreenElement) {
-
-            await document.documentElement.requestFullscreen();
-
-        }
-
-    }
-
-    catch(e) {
-
-        console.log(e);
-
-    }
-
-}
-
-
-/* =========================================================
-   PAISAGEM
-========================================================= */
-
-async function landscape() {
-
-    try {
-
-        if(
-            screen.orientation &&
-            screen.orientation.lock
-        ) {
-
-            await screen.orientation.lock(
-                "landscape"
+        const saved =
+            localStorage.getItem(
+                "RPG_MESTRE_STATE"
             );
 
+        if(saved){
+
+            const parsed =
+                JSON.parse(saved);
+
+            return parsed;
+
         }
 
-    }
+    }catch(error){
 
-    catch(e) {
-
-        alert(
-            "O navegador pode não permitir bloquear a orientação."
-        );
+        console.error(error);
 
     }
 
+    return structuredClone(
+        DEFAULT_STATE
+    );
 }
 
 
-/* =========================================================
+let state =
+    loadState();
+
+
+/* =====================================================
+   UTILITÁRIOS
+===================================================== */
+
+function saveSilently(){
+
+    localStorage.setItem(
+
+        "RPG_MESTRE_STATE",
+
+        JSON.stringify(state)
+
+    );
+}
+
+
+function escapeHTML(text){
+
+    return String(text)
+
+        .replaceAll("&","&amp;")
+
+        .replaceAll("<","&lt;")
+
+        .replaceAll(">","&gt;")
+
+        .replaceAll('"',"&quot;")
+
+        .replaceAll("'","&#039;");
+}
+
+
+/* =====================================================
+   PAINÉIS
+===================================================== */
+
+function openPanel(id){
+
+    document
+        .querySelectorAll(".panel")
+        .forEach(
+            panel =>
+                panel.classList.remove(
+                    "active"
+                )
+        );
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+}
+
+
+function closePanels(){
+
+    document
+        .querySelectorAll(".panel")
+        .forEach(
+            panel =>
+                panel.classList.remove(
+                    "active"
+                )
+        );
+}
+
+
+document
+    .querySelectorAll("[data-close]")
+    .forEach(
+        button =>
+            button.addEventListener(
+                "pointerdown",
+                closePanels
+            )
+    );
+
+
+/* =====================================================
+   BOTÕES
+===================================================== */
+
+document
+    .getElementById("settingsButton")
+    .addEventListener(
+        "pointerdown",
+        ()=>openPanel("settingsPanel")
+    );
+
+
+document
+    .getElementById("inventoryButton")
+    .addEventListener(
+        "pointerdown",
+        ()=>openPanel("inventoryPanel")
+    );
+
+
+document
+    .getElementById("statusButton")
+    .addEventListener(
+        "pointerdown",
+        ()=>openPanel("statusPanel")
+    );
+
+
+document
+    .getElementById("systemButton")
+    .addEventListener(
+        "pointerdown",
+        ()=>openPanel("systemPanel")
+    );
+
+
+document
+    .getElementById("masterButton")
+    .addEventListener(
+        "pointerdown",
+        ()=>openPanel("masterPanel")
+    );
+
+
+/* =====================================================
    HUD
-========================================================= */
+===================================================== */
 
-function renderHUD() {
+function renderHUD(){
 
-    const p = state.player;
+    const p =
+        state.player;
 
-    document.getElementById("hud").innerHTML = `
+
+    document
+        .getElementById("hud")
+        .innerHTML = `
 
         <div class="hudBox">
             ❤️ ${p.hp}/${p.hpMax}
@@ -1162,47 +1362,60 @@ function renderHUD() {
 
     `;
 
-    document.getElementById(
-        "masterMessageText"
-    ).textContent =
-        state.narrative || "";
 
-    document.getElementById(
-        "calendarText"
-    ).textContent =
-        `Ano ${state.calendar.year},
-         mês ${state.calendar.month},
-         dia ${state.calendar.day}`;
+    document
+        .getElementById(
+            "masterMessageText"
+        )
+        .textContent =
+            state.narrative || "";
+
+
+    document
+        .getElementById(
+            "calendarText"
+        )
+        .textContent =
+
+        `Ano ${state.calendar.year}
+         • Mês ${state.calendar.month}
+         • Dia ${state.calendar.day}`;
 
 }
 
 
-/* =========================================================
+/* =====================================================
    INVENTÁRIO
-========================================================= */
+===================================================== */
 
-function renderInventory() {
+function renderInventory(){
 
     const list =
         document.getElementById(
             "inventoryList"
         );
 
-    if(!state.inventory.length) {
+
+    if(
+        !state.inventory ||
+        !state.inventory.length
+    ){
 
         list.innerHTML =
+
             `<div class="card">
                 Inventário vazio.
              </div>`;
 
         return;
-
     }
 
 
     list.innerHTML =
+
         state.inventory
-        .map(item => `
+        .map(
+            item => `
 
             <div class="inventoryItem">
 
@@ -1213,19 +1426,22 @@ function renderInventory() {
 
             </div>
 
-        `)
+            `
+        )
         .join("");
 
 }
 
 
-/* =========================================================
+/* =====================================================
    STATUS
-========================================================= */
+===================================================== */
 
-function renderStatus() {
+function renderStatus(){
 
-    const p = state.player;
+    const p =
+        state.player;
+
 
     const rows = {
 
@@ -1252,66 +1468,1520 @@ function renderStatus() {
 
         "🕐 Hora":
             state.world.time
-
     };
 
 
-    document.getElementById(
-        "statusList"
-    ).innerHTML =
+    document
+        .getElementById(
+            "statusList"
+        )
+        .innerHTML =
 
         Object.entries(rows)
         .map(
             ([name,value]) => `
 
-                <div class="statusRow">
+            <div class="statusRow">
 
-                    <span>
-                        ${name}
-                    </span>
+                <span>
+                    ${name}
+                </span>
 
-                    <b>
-                        ${escapeHTML(value)}
-                    </b>
+                <b>
+                    ${escapeHTML(value)}
+                </b>
 
-                </div>
+            </div>
 
             `
         )
         .join("");
+}
+
+
+/* =====================================================
+   CAMADAS
+===================================================== */
+
+function ensureLayer(layerNumber){
+
+    while(
+        state.layers.length <
+        layerNumber
+    ){
+
+        state.layers.push({
+
+            id:
+                state.layers.length+1,
+
+            elements:[]
+
+        });
+
+    }
 
 }
 
 
-/* =========================================================
-   RENDERIZADOR DE CAMADAS
-========================================================= */
+/* =====================================================
+   ELEMENTOS
+===================================================== */
 
-function renderLayers() {
+function createWorldElement(
+    element
+){
+
+    let el;
+
+
+    /*
+       Se for interativo,
+       usamos BUTTON.
+
+       Assim o navegador trata
+       toque naturalmente.
+    */
+
+    if(element.interactive){
+
+        el =
+            document.createElement(
+                "button"
+            );
+
+    }else{
+
+        el =
+            document.createElement(
+                "div"
+            );
+
+    }
+
+
+    el.className =
+        "worldElement";
+
+
+    el.dataset.id =
+        element.id || "";
+
+
+    /* =================================================
+       VISUAL
+    ================================================= */
+
+    if(element.emoji){
+
+        el.classList.add(
+            "emojiElement"
+        );
+
+        el.textContent =
+            element.emoji;
+
+    }
+
+
+    if(element.text){
+
+        el.classList.add(
+            "textElement"
+        );
+
+        el.textContent =
+            element.text;
+
+    }
+
+
+    if(element.image){
+
+        el.classList.add(
+            "imageElement"
+        );
+
+        el.style.backgroundImage =
+            `url("${element.image}")`;
+
+        el.style.width =
+            element.width ||
+            "80px";
+
+        el.style.height =
+            element.height ||
+            "80px";
+
+    }
+
+
+    /* =================================================
+       POSIÇÃO
+    ================================================= */
+
+    el.style.left =
+        (element.x ?? 50) + "%";
+
+
+    el.style.top =
+        (element.y ?? 50) + "%";
+
+
+    el.style.transform =
+
+        `translate(-50%,-50%)
+         rotate(${element.rotate || 0}deg)
+         scale(${element.scale || 1})`;
+
+
+    /* =================================================
+       TOQUE
+    ================================================= */
+
+    if(element.interactive){
+
+        el.addEventListener(
+            "pointerdown",
+            function(event){
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                /*
+                   Qualquer objeto pode
+                   mandar sua própria mensagem
+                   ao Mestre.
+                */
+
+                const label =
+                    element.label ||
+                    element.name ||
+                    element.id ||
+                    "objeto";
+
+
+                const message =
+
+                    element.message ||
+
+                    `O jogador tocou em ${label}.`;
+
+
+                showNarrative(
+                    element.feedback ||
+                    `Você interagiu com ${label}.`
+                );
+
+
+                askMaster(
+                    message,
+                    false
+                );
+
+            }
+        );
+
+    }
+
+
+    return el;
+
+}
+
+
+/* =====================================================
+   RENDERIZAR CAMADAS
+===================================================== */
+
+function renderLayers(){
 
     const root =
         document.getElementById(
             "layers"
         );
 
+
     root.innerHTML = "";
 
 
     state.layers.forEach(
-        (layer,index) => {
+        layer => {
 
-            const layerElement =
-                document.createElement("div");
+            const layerDiv =
+                document.createElement(
+                    "div"
+                );
 
-            layerElement.className =
+
+            layerDiv.className =
                 "layer";
 
-            layerElement.dataset.layer =
-                index + 1;
+
+            layerDiv.dataset.layer =
+                layer.id;
+
+
+            /*
+               IMPORTANTE:
+
+               A própria camada não recebe
+               toque.
+
+               Somente os elementos recebem.
+            */
+
+            layerDiv.style.zIndex =
+                layer.id;
+
+
+            layerDiv.style.pointerEvents =
+                "none";
 
 
             (layer.elements || [])
             .forEach(
                 element => {
 
-                    renderEle
+                    const el =
+                        createWorldElement(
+                            element
+                        );
+
+
+                    layerDiv.appendChild(
+                        el
+                    );
+
+                }
+            );
+
+
+            root.appendChild(
+                layerDiv
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   AÇÕES
+===================================================== */
+
+function renderActions(){
+
+    const root =
+        document.getElementById(
+            "dynamicActions"
+        );
+
+
+    root.innerHTML = "";
+
+
+    (state.actions || [])
+    .forEach(
+        action => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "dynamicButton";
+
+
+            button.textContent =
+                action.label ||
+                "Ação";
+
+
+            button.addEventListener(
+                "pointerdown",
+                function(event){
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+
+                    askMaster(
+
+                        action.message ||
+                        action.label,
+
+                        false
+
+                    );
+
+                }
+            );
+
+
+            root.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function renderAll(){
+
+    renderHUD();
+
+    renderInventory();
+
+    renderStatus();
+
+    renderLayers();
+
+    renderActions();
+
+}
+
+
+/* =====================================================
+   MOVIMENTO
+===================================================== */
+
+let moveMode =
+    false;
+
+
+function toggleMoveMode(){
+
+    moveMode =
+        !moveMode;
+
+
+    const button =
+        document.getElementById(
+            "moveButton"
+        );
+
+
+    if(moveMode){
+
+        button.style.border =
+            "1px solid white";
+
+        showNarrative(
+            "🚶 Modo andar ativado. Toque no local para onde deseja ir."
+        );
+
+    }else{
+
+        button.style.border =
+            "";
+
+        showNarrative(
+            "🚶 Modo andar desativado."
+        );
+
+    }
+
+}
+
+
+document
+    .getElementById("moveButton")
+    .addEventListener(
+        "pointerdown",
+        toggleMoveMode
+    );
+
+
+/* =====================================================
+   TOQUE NO MUNDO
+===================================================== */
+
+document
+    .getElementById("world")
+    .addEventListener(
+        "pointerdown",
+        function(event){
+
+            /*
+               Se tocou em algum objeto,
+               o objeto já recebeu o toque.
+            */
+
+            if(
+                event.target.closest(
+                    ".worldElement"
+                )
+            ){
+
+                return;
+
+            }
+
+
+            /*
+               Botões dinâmicos também
+               não são tratados como chão.
+            */
+
+            if(
+                event.target.closest(
+                    ".dynamicButton"
+                )
+            ){
+
+                return;
+
+            }
+
+
+            const rect =
+                this.getBoundingClientRect();
+
+
+            const x =
+                (
+                    event.clientX -
+                    rect.left
+                )
+                /
+                rect.width
+                *
+                100;
+
+
+            const y =
+                (
+                    event.clientY -
+                    rect.top
+                )
+                /
+                rect.height
+                *
+                100;
+
+
+            if(moveMode){
+
+                state.player.x =
+                    x;
+
+                state.player.y =
+                    y;
+
+
+                showNarrative(
+
+                    "🚶 Você caminhou até o local."
+
+                );
+
+
+                askMaster(
+
+                    `O jogador caminhou até `
+                    +
+                    `(${x.toFixed(1)}%, `
+                    +
+                    `${y.toFixed(1)}%).`,
+
+                    false
+
+                );
+
+
+                renderHUD();
+
+
+            }else{
+
+                /*
+                   Mesmo um toque em um espaço vazio
+                   pode ser informado ao Mestre.
+                */
+
+                askMaster(
+
+                    `O jogador tocou no chão `
+                    +
+                    `em (${x.toFixed(1)}%, `
+                    +
+                    `${y.toFixed(1)}%).`,
+
+                    false
+
+                );
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   NARRATIVA
+===================================================== */
+
+function showNarrative(
+    text
+){
+
+    state.narrative =
+        text;
+
+    renderHUD();
+
+}
+
+
+/* =====================================================
+   CHAT
+===================================================== */
+
+function addChat(
+    author,
+    message
+){
+
+    const log =
+        document.getElementById(
+            "chatLog"
+        );
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.className =
+        "chatMessage";
+
+
+    const strong =
+        document.createElement(
+            "strong"
+        );
+
+
+    strong.textContent =
+        author;
+
+
+    const text =
+        document.createElement(
+            "span"
+        );
+
+
+    text.textContent =
+        message;
+
+
+    div.appendChild(
+        strong
+    );
+
+
+    div.appendChild(
+        text
+    );
+
+
+    log.appendChild(
+        div
+    );
+
+
+    log.scrollTop =
+        log.scrollHeight;
+
+}
+
+
+/* =====================================================
+   MANDAR CHAT
+===================================================== */
+
+async function sendChat(){
+
+    const input =
+        document.getElementById(
+            "chatInput"
+        );
+
+
+    const message =
+        input.value.trim();
+
+
+    if(!message){
+
+        return;
+
+    }
+
+
+    input.value = "";
+
+
+    await askMaster(
+        message,
+        true
+    );
+
+}
+
+
+document
+    .getElementById("sendChat")
+    .addEventListener(
+        "pointerdown",
+        function(event){
+
+            event.preventDefault();
+
+            sendChat();
+
+        }
+    );
+
+
+document
+    .getElementById("chatInput")
+    .addEventListener(
+        "keydown",
+        function(event){
+
+            if(
+                event.key === "Enter" &&
+                !event.shiftKey
+            ){
+
+                event.preventDefault();
+
+                sendChat();
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   MESTRE / SERVIDOR
+===================================================== */
+
+async function askMaster(
+    message,
+    showInChat=true
+){
+
+    if(showInChat){
+
+        addChat(
+            "Você",
+            message
+        );
+
+    }
+
+
+    const server =
+        document
+        .getElementById(
+            "serverURL"
+        )
+        .value
+        .trim();
+
+
+    /*
+       Ainda sem servidor:
+
+       o jogo funciona normalmente,
+       mas não há IA conectada.
+    */
+
+    if(!server){
+
+        showNarrative(
+
+            "📡 O Mestre está offline. Configure o servidor para conectar a IA."
+
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        document
+            .getElementById(
+                "connection"
+            )
+            .textContent =
+                "🟡 MESTRE";
+
+
+        const response =
+            await fetch(
+
+                server.replace(/\/$/,"")
+                +
+                "/api/master",
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+
+                        JSON.stringify({
+
+                            message:message,
+
+                            state:state
+
+                        })
+
+                }
+
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP "
+                +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if(data.state){
+
+            state =
+                data.state;
+
+        }
+
+
+        if(data.narrative){
+
+            state.narrative =
+                data.narrative;
+
+        }
+
+
+        if(
+            Array.isArray(
+                data.commands
+            )
+        ){
+
+            executeCommands(
+                data.commands
+            );
+
+        }
+
+
+        if(showInChat){
+
+            addChat(
+
+                "Mestre",
+
+                data.reply ||
+                data.narrative ||
+                "..."
+
+            );
+
+        }
+
+
+        document
+            .getElementById(
+                "connection"
+            )
+            .textContent =
+                "🟢 MESTRE";
+
+
+        renderAll();
+
+        saveSilently();
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+
+        document
+            .getElementById(
+                "connection"
+            )
+            .textContent =
+                "🔴 OFFLINE";
+
+
+        if(showInChat){
+
+            addChat(
+
+                "Sistema",
+
+                "Não consegui conectar ao servidor do Mestre."
+
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   COMANDOS DO MESTRE
+===================================================== */
+
+function executeCommands(
+    commands
+){
+
+    commands.forEach(
+        command => {
+
+            switch(
+                command.type
+            ){
+
+                case "message":
+
+                    state.narrative =
+                        command.text;
+
+                    break;
+
+
+                case "set_narrative":
+
+                    state.narrative =
+                        command.text;
+
+                    break;
+
+
+                case "set_player":
+
+                    Object.assign(
+
+                        state.player,
+
+                        command.values ||
+                        {}
+
+                    );
+
+                    break;
+
+
+                case "set_world":
+
+                    Object.assign(
+
+                        state.world,
+
+                        command.values ||
+                        {}
+
+                    );
+
+                    break;
+
+
+                case "add_item":{
+
+                    const existing =
+                        state.inventory
+                        .find(
+                            item =>
+                                item.name ===
+                                command.name
+                        );
+
+
+                    if(existing){
+
+                        existing.qty =
+                            (existing.qty || 1)
+                            +
+                            (command.qty || 1);
+
+                    }else{
+
+                        state.inventory.push({
+
+                            name:
+                                command.name,
+
+                            qty:
+                                command.qty || 1
+
+                        });
+
+                    }
+
+                    break;
+
+                }
+
+
+                case "add_layer":
+
+                    ensureLayer(
+                        command.layer
+                    );
+
+
+                    state.layers[
+                        command.layer - 1
+                    ].elements =
+                        command.elements ||
+                        [];
+
+
+                    break;
+
+
+                case "add_element":
+
+                    ensureLayer(
+                        command.layer
+                    );
+
+
+                    state.layers[
+                        command.layer - 1
+                    ].elements.push(
+
+                        command.element
+
+                    );
+
+
+                    break;
+
+
+                case "remove_element":
+
+                    state.layers.forEach(
+                        layer => {
+
+                            layer.elements =
+                                (
+                                    layer.elements ||
+                                    []
+                                )
+                                .filter(
+
+                                    element =>
+                                        element.id !==
+                                        command.id
+
+                                );
+
+                        }
+                    );
+
+                    break;
+
+
+                case "clear_layer":
+
+                    ensureLayer(
+                        command.layer
+                    );
+
+
+                    state.layers[
+                        command.layer - 1
+                    ].elements = [];
+
+
+                    break;
+
+
+                case "set_actions":
+
+                    state.actions =
+                        command.actions ||
+                        [];
+
+
+                    break;
+
+
+                case "add_action":
+
+                    state.actions.push(
+                        command.action
+                    );
+
+
+                    break;
+
+
+                case "clear_actions":
+
+                    state.actions = [];
+
+
+                    break;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SALVAR
+===================================================== */
+
+document
+    .getElementById("saveButton")
+    .addEventListener(
+        "pointerdown",
+        function(){
+
+            saveSilently();
+
+            alert(
+                "💾 Jogo salvo!"
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   CARREGAR
+===================================================== */
+
+document
+    .getElementById("loadButton")
+    .addEventListener(
+        "pointerdown",
+        function(){
+
+            state =
+                loadState();
+
+
+            renderAll();
+
+
+            alert(
+                "📂 Jogo carregado!"
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   NOVO JOGO
+===================================================== */
+
+document
+    .getElementById("newGameButton")
+    .addEventListener(
+        "pointerdown",
+        function(){
+
+            if(
+                !confirm(
+                    "Criar um novo jogo?"
+                )
+            ){
+
+                return;
+
+            }
+
+
+            state =
+                structuredClone(
+                    DEFAULT_STATE
+                );
+
+
+            saveSilently();
+
+            renderAll();
+
+        }
+    );
+
+
+/* =====================================================
+   TELA CHEIA
+===================================================== */
+
+document
+    .getElementById(
+        "fullscreenButton"
+    )
+    .addEventListener(
+        "pointerdown",
+        async function(){
+
+            try{
+
+                if(
+                    !document.fullscreenElement
+                ){
+
+                    await document
+                        .documentElement
+                        .requestFullscreen();
+
+                }
+
+            }catch(error){
+
+                console.log(error);
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   PAISAGEM
+===================================================== */
+
+document
+    .getElementById(
+        "landscapeButton"
+    )
+    .addEventListener(
+        "pointerdown",
+        async function(){
+
+            try{
+
+                if(
+                    screen.orientation &&
+                    screen.orientation.lock
+                ){
+
+                    await screen
+                        .orientation
+                        .lock(
+                            "landscape"
+                        );
+
+                }
+
+            }catch(error){
+
+                alert(
+                    "O navegador não permite bloquear a orientação."
+                );
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   SERVIDOR
+===================================================== */
+
+const savedServer =
+    localStorage.getItem(
+        "RPG_MESTRE_SERVER"
+    );
+
+
+if(savedServer){
+
+    document
+        .getElementById(
+            "serverURL"
+        )
+        .value =
+            savedServer;
+
+}
+
+
+document
+    .getElementById(
+        "testServerButton"
+    )
+    .addEventListener(
+        "pointerdown",
+        async function(){
+
+            const url =
+                document
+                .getElementById(
+                    "serverURL"
+                )
+                .value
+                .trim();
+
+
+            if(!url){
+
+                alert(
+                    "Digite o endereço do servidor."
+                );
+
+                return;
+
+            }
+
+
+            localStorage.setItem(
+
+                "RPG_MESTRE_SERVER",
+
+                url
+
+            );
+
+
+            try{
+
+                const response =
+                    await fetch(
+
+                        url.replace(/\/$/,"")
+                        +
+                        "/api/health"
+
+                    );
+
+
+                if(!response.ok){
+
+                    throw new Error();
+
+                }
+
+
+                document
+                    .getElementById(
+                        "connection"
+                    )
+                    .textContent =
+                        "🟢 SERVIDOR";
+
+
+                alert(
+                    "🟢 Servidor conectado!"
+                );
+
+            }
+
+            catch(error){
+
+                document
+                    .getElementById(
+                        "connection"
+                    )
+                    .textContent =
+                        "🔴 OFFLINE";
+
+
+                alert(
+                    "🔴 Não foi possível conectar."
+                );
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   API INTERNA DO RPG
+===================================================== */
+
+window.RPG = {
+
+
+    getState(){
+
+        return structuredClone(
+            state
+        );
+
+    },
+
+
+    save(){
+
+        saveSilently();
+
+    },
+
+
+    render(){
+
+        renderAll();
+
+    },
+
+
+    message(
+        text
+    ){
+
+        showNarrative(
+            text
+        );
+
+    },
+
+
+    addLayer(
+        layerNumber
+    ){
+
+        ensureLayer(
+            layerNumber
+        );
+
+        renderAll();
+
+    },
+
+
+    addElement(
+        layerNumber,
+        element
+    ){
+
+        ensureLayer(
+            layerNumber
+        );
+
+
+        state.layers[
+            layerNumber - 1
+        ].elements.push(
+            element
+        );
+
+
+        renderAll();
+
+    },
+
+
+    removeElement(
+        id
+    ){
+
+        executeCommands([
+
+            {
+
+                type:
+                    "remove_element",
+
+                id:id
+
+            }
+
+        ]);
+
+
+        renderAll();
+
+    },
+
+
+    addAction(
+        action
+    ){
+
+        state.actions.push(
+            action
+        );
+
+
+        renderAll();
+
+    }
+
+};
+
+
+/* =====================================================
+   MENSAGEM INICIAL
+===================================================== */
+
+addChat(
+
+    "Mestre",
+
+    "O mundo está pronto. Toque em qualquer lugar ou use os botões abaixo."
+
+);
+
+
+/* =====================================================
+   PRIMEIRO RENDER
+===================================================== */
+
+renderAll();
+
+</script>
+
+</body>
+
+</html>
